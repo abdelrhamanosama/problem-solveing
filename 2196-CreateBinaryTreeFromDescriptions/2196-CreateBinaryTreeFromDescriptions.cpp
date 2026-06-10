@@ -1,69 +1,46 @@
-// Last updated: 6/10/2026, 4:01:39 PM
-/**
- * Definition for a binary tree node.
- * struct TreeNode {
- *     int val;
- *     TreeNode *left;
- *     TreeNode *right;
- *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
- *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
- *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
- * };
- */
-class Solution {
-public:
-    TreeNode* createBinaryTree(vector<vector<int>>& descriptions) {
-
-        static const auto fast_io = [](){
-            std::ios::sync_with_stdio(false);
-            std::cin.tie(nullptr);
-            return nullptr;
-        }();
-
-        static TreeNode nodes[100001] = {};
-        static int is_child[100001] = { false };
-        static int generation[100001] = { 0 };
-        static int generation_id = 0;
-
-        ++generation_id;
-
-        for(const auto& v : descriptions){
-            const int parent = v[0], child = v[1];
-            const bool left_child = v[2];
-            if(generation[parent] != generation_id){
-                TreeNode* temp = &nodes[parent];
-                temp->left = temp->right = nullptr;
-                temp->val = parent;
-                generation[parent] = generation_id;
-            }
-            if(generation[child] != generation_id){
-                TreeNode* temp = &nodes[child];
-                temp->left = temp->right = nullptr;
-                temp->val = child;
-                generation[child] = generation_id;
-            }
-            TreeNode* parent_node = &nodes[parent];
-            TreeNode* child_node = &nodes[child];
-            if(left_child){
-                parent_node->left = child_node;
-            } else {
-                parent_node->right = child_node;
-            }
-            is_child[child] = true;
-        }
-        int root = -1;
-        for(const auto& v : descriptions){
-            const int parent = v[0];
-            if(!is_child[parent]){
-                root = parent;
-                break;
-            }
-        }
-        for(const auto& v : descriptions){
-            const int child = v[1];
-            is_child[child] = false;
-        }
-
-        return &nodes[root];
-    }
-};
+// Last updated: 6/10/2026, 4:09:35 PM
+1class Solution
+2{
+3    // struct TreeNode {
+4    //     int val;
+5    //     TreeNode *left;
+6    //     TreeNode *right;
+7    //     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+8    //     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+9    //     TreeNode(int x, TreeNode *left, TreeNode *right)
+10    //         : val(x), left(left), right(right) {}
+11    // };
+12
+13private:
+14
+15public:
+16TreeNode* createBinaryTree(vector<vector<int>>& descriptions) {
+17        unordered_map<int, TreeNode*> tree;
+18        unordered_set<int> childern;
+19        for(auto desc : descriptions){
+20            int p = desc[0];
+21            int child = desc[1];
+22            int left = desc[2];
+23            if(tree.find(p ) == tree.end())
+24              tree[p] = new TreeNode(p);
+25            if(tree.find(child) == tree.end())
+26              tree[child] = new TreeNode(child);
+27            if(left){
+28                tree[p]->left = tree[child];
+29            }
+30            else {
+31                tree[p]->right = tree[child];
+32
+33            }
+34            childern.insert(child);
+35        }
+36        for(auto x:tree){
+37          auto val = x.first;
+38          auto root = x.second;
+39          if(childern.find(val) == childern.end()){
+40              return root;
+41          }
+42        }
+43        return nullptr;
+44    }
+45};
