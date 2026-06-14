@@ -1,4 +1,4 @@
-// Last updated: 6/14/2026, 5:31:48 PM
+// Last updated: 6/14/2026, 6:06:08 PM
 1/**
 2 * Definition for singly-linked list.
 3 * struct ListNode {
@@ -11,21 +11,30 @@
 10 */
 11class Solution {
 12public:
-13        int pairSum(ListNode* head) {
-14        ListNode * curr = head;
-15        long long n = 0 , mx = 0;
-16        stack<long long> s;
-17        while(curr != nullptr){
-18          n++;
-19          s.push(curr->val);
-20          curr = curr->next;
-21        }
-22        curr = head;
-23        for(int i = 1; i <= n/2; i++) {
-24            mx = max(s.top()+curr->val ,mx);
-25            s.pop();
-26            curr = curr->next;
-27        }             
-28        return mx;
-29    }
-30};
+13        ListNode* reverse(ListNode* head) {
+14      ListNode* prev = nullptr;
+15      while(head!=nullptr){
+16        ListNode* nxt = head->next;
+17        head->next = prev;
+18        prev = head;
+19        head = nxt;
+20      }
+21      return prev;
+22    }
+23    int pairSum(ListNode* head) {
+24        ListNode * curr = head , * curr2 = head;
+25        int n = 0 , mx = 0;
+26        
+27        while(curr2 != nullptr){
+28          curr = curr->next;
+29          curr2 = curr2->next->next;
+30        }
+31        curr = reverse(curr);   
+32        while(curr!=nullptr){
+33          mx = max(head->val + curr->val, mx);
+34          head = head->next;
+35          curr = curr->next;
+36        }
+37        return mx;
+38    }
+39};
