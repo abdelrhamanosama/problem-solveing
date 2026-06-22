@@ -1,31 +1,40 @@
-// Last updated: 6/21/2026, 1:18:12 AM
+// Last updated: 6/22/2026, 3:21:08 AM
 1class Solution {
-2public:
-3    int maxBuilding(int num, vector<vector<int>>& r) {
-4        r.push_back({1, 0});
-5        sort(r.begin(), r.end());
-6        int n = r.size();
-7
-8        for (int i = 1; i < n; i++)
-9            r[i][1] = yCap(r[i - 1], r[i]);
-10
-11        for (int i = n - 2; i >= 0; i--)
-12            r[i][1] = yCap(r[i + 1], r[i]);
-13
-14        int res = 0;
-15        for (int i = 1; i < n; i++)
-16            res = max(res, yPeak(r[i - 1], r[i]));
-17
-18        return max(res, r[n - 1][1] + num - r[n - 1][0]);
-19    }
-20
-21    int yCap(vector<int>& l, vector<int>& r) {
-22        int x1 = l[0], y1 = l[1], x2 = r[0], y2 = r[1];
-23        return min(y2, y1 + abs(x2 - x1));
-24    }
-25
-26    int yPeak(vector<int>& l, vector<int>& r) {
-27        int x1 = l[0], y1 = l[1], x2 = r[0], y2 = r[1];
-28        return (y1 + y2 + x2 - x1) >> 1;
-29    }
-30};
+2#define all(s) s.begin(), s.end()
+3
+4public:
+5    int maxBuilding(int n, vector<vector<int>>& restrictions) {
+6      restrictions.push_back({1,0});
+7      sort(all(restrictions));
+8      if(restrictions.back()[0] != n) restrictions.push_back({n,n-1});
+9      int mx = 0 , m = restrictions.size();
+10      for(int i = 1; i<m; i++){
+11          restrictions[i][1] = min(restrictions[i][1] , restrictions[i-1][1] + (restrictions[i][0] - restrictions[i-1][0]));
+12      }
+13      for(int i = m-2; i >=0 ; i--)
+14          restrictions[i][1] = min(restrictions[i][1] , restrictions[i+1][1] + (restrictions[i+1][0] - restrictions[i][0]));
+15      for(int i = 1 ; i < m; i++){
+16        if(restrictions[i-1][1] < restrictions[i][1]){
+17            int s = restrictions[i-1][0] + (restrictions[i][1] - restrictions[i-1][1]);
+18            int diff = restrictions[i][0] - s;
+19            int ans = diff/2 + restrictions[i][1];
+20            mx = max(mx , ans);
+21        }
+22        else if(restrictions[i-1][1] == restrictions[i][1]){
+23          int diff = restrictions[i][0] - restrictions[i-1][0];
+24          int ans = diff/2 + restrictions[i][1];
+25          mx = max(mx , ans);
+26        }
+27        else {
+28            int s = restrictions[i-1][0] + (restrictions[i-1][1] - restrictions[i][1]);
+29            int diff = restrictions[i][0] - s;
+30            int ans = diff/2 + restrictions[i-1][1];
+31            mx = max(mx , ans);
+32        }
+33      }
+34
+35      
+36      return mx;
+37    }
+38    
+39};
