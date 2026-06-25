@@ -1,26 +1,21 @@
-// Last updated: 6/25/2026, 5:41:20 PM
-1#include <bits/stdc++.h>
-2#include <ext/pb_ds/assoc_container.hpp>
-3using namespace __gnu_pbds;
-4typedef tree<long long, null_type, less_equal<long long>, rb_tree_tag,tree_order_statistics_node_update> ordered_multiset;
-5class Solution {
-6public:
-7    long long countMajoritySubarrays(vector<int>& nums, int target) {
-8      int n = nums.size();
-9        vector<long long>pref(n+1 , 0);
-10        ordered_multiset ms;
-11        for(int i = 0 ; i < n; i++)    
-12          {
-13            pref[i+1] = pref[i] + (nums[i]==target ? 1 : -1);
+// Last updated: 6/25/2026, 6:33:38 PM
+1class Solution {
+2public:
+3      long long countMajoritySubarrays(vector<int>& nums, int target) {
+4        int n = nums.size();
+5        vector<int> freq(2*n+1 , 0);
+6        freq[n] = 1;
+7        long long less = 0 , ans = 0 , curr = n; 
+8        for(auto x: nums){
+9          if(x == target){
+10            less += freq[curr++];
+11          }
+12          else {
+13            less-=freq[--curr];
 14          }
-15        // for(int i = 0 ; i <= n ; i++) ms.insert(pref[i]);
-16        long long cnt = 0;
-17        ms.insert(pref[0]);
-18        for(int i =1; i <= n; i++){
-19          cnt+=ms.order_of_key(pref[i]);
-20        //   cout<<ms.order_of_key(pref[i])<<"\t"<<pref[i]<<"\n";
-21          ms.insert(pref[i]);
-22        }
-23        return cnt;
-24    }
-25};
+15          freq[curr]++;
+16          ans +=less;
+17        }  
+18        return ans;
+19    }
+20};
