@@ -1,4 +1,4 @@
-// Last updated: 6/28/2026, 6:24:34 PM
+// Last updated: 6/28/2026, 6:25:51 PM
 1class Solution {
 2public:
 3        int maximumElementAfterDecrementingAndRearranging(vector<int>& arr) {
