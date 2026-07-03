@@ -1,90 +1,63 @@
-// Last updated: 7/3/2026, 7:36:37 AM
+// Last updated: 7/3/2026, 8:11:48 AM
 1class Solution {
 2public:
-3    int findMaxPathScore(vector<vector<int>>& edges,
-4                         vector<bool>& online,
-5                         long long k) {
-6
-7        int n = online.size();
-8
-9        vector<vector<pair<int,int>>> adj(n);
-10        vector<int> indeg(n);
-11
-12        int mxEdge = 0;
-13
-14        for (auto &e : edges) {
-15            adj[e[0]].push_back({e[1], e[2]});
-16            indeg[e[1]]++;
-17            mxEdge = max(mxEdge, e[2]);
-18        }
-19
-20        // Topological order
-21        queue<int> q;
-22        vector<int> topo;
-23
-24        for (int i = 0; i < n; i++)
-25            if (indeg[i] == 0)
-26                q.push(i);
-27
-28        while (!q.empty()) {
-29            int u = q.front();
-30            q.pop();
-31
-32            topo.push_back(u);
-33
-34            for (auto [v, c] : adj[u]) {
-35                if (--indeg[v] == 0)
-36                    q.push(v);
-37            }
-38        }
-39
-40        auto check = [&](int limit)->bool {
-41
-42            const long long INF = 4e18;
-43
-44            vector<long long> dist(n, INF);
-45            dist[0] = 0;
-46
-47            for (int u : topo) {
-48
-49                if (dist[u] == INF)
-50                    continue;
-51
-52                if (u != 0 && u != n-1 && !online[u])
-53                    continue;
-54
-55                for (auto [v, c] : adj[u]) {
-56
-57                    if (c < limit)
-58                        continue;
+3    
+4  int findMaxPathScore(vector<vector<int>> &edges, vector<bool> &online,
+5                       long long k)
+6  {
+7    const int N = 5e4 + 5;
+8    int n = online.size() - 1;
+9    vector<int> indeg(n+1,0);
+10    vector<pair<int, int>> adj[N];
+11    for (auto x : edges)
+12    {
+13      auto u = x[0], v = x[1], c = x[2];
+14      adj[u].push_back({v, c});
+15      indeg[v]++;
+16    }
+17    vector<int> topo;
+18    if (online[0] == 0 || n == 0)
+19      return -1;
+20    queue<int>q;
+21    for(int i = 0 ; i <= n; i++){
+22      if(indeg[i] == 0) q.push(i);
+23    }    
+24    while(!q.empty()){
+25      topo.push_back(q.front());
+26      int node = q.front();
+27      q.pop();
+28      for(auto [x,c]: adj[node])
+29        {
+30          if(--indeg[x] == 0) q.push(x);
+31        }
+32    }
+33    auto check = [&](int lim)->bool{
+34      vector<long long> dist(n+1 , 1e14);
+35      dist[0] = 0;
+36      for(int u : topo){
+37        if(dist[u] == 1e14 || !online[u]) continue;
+38        for(auto [v,c] : adj[u]){
+39            if(c < lim) continue;
+40            if(!online[v]) continue;
+41            dist[v] = min(dist[v], dist[u] + c);
+42        }
+43      }
+44      return dist[n] <= k;
+45    };
+46    int l = 0;
+47    int r = 1e9;
+48    int ans = -1;
+49    while(l <=  r){
+50      int mid = l+r >> 1;
+51      if(check(mid)){
+52        ans = mid;
+53        l = mid +1;
+54      }
+55      else
+56        r = mid - 1;
+57    }
+58      return ans;
 59
-60                    if (v != n-1 && !online[v])
-61                        continue;
-62
-63                    dist[v] = min(dist[v],
-64                                  dist[u] + (long long)c);
-65                }
-66            }
-67
-68            return dist[n-1] <= k;
-69        };
-70
-71        int lo = 0;
-72        int hi = mxEdge;
-73        int ans = -1;
-74
-75        while (lo <= hi) {
-76
-77            int mid = (lo + hi) / 2;
-78
-79            if (check(mid)) {
-80                ans = mid;
-81                lo = mid + 1;
-82            }
-83            else
-84                hi = mid - 1;
-85        }
-86
-87        return ans;
-88    }
-89};
+60  }
+61
+62};
