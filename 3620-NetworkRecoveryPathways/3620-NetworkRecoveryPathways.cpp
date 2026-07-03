@@ -1,30 +1,37 @@
-// Last updated: 7/3/2026, 6:26:18 AM
-1class Solution {
-2public:
-3    bool findSafeWalk(vector<vector<int>>& grid, int health) {
-4      int n = grid.size() , m = grid[0].size();
-5      int dx [] = {1,-1,0,0};
-6      int dy [] = {0,0,1,-1};
-7      priority_queue<array<int,3>>pq;
-8      vector<vector<int>> best(n,vector<int>(m,-1));
-9      if(grid[0][0] == 1) health--;
-10      pq.push({health , 0 ,0});
-11      best[0][0] = health;
-12      while(!pq.empty()){
-13        auto [c,x,y] = pq.top();pq.pop();
-14        if(x == n-1 && y == m-1 && c >= 1) return 1;
-15        if(c < best[x][y]) continue;
-16        for(int k = 0 ; k < 4 ; k++){
-17          int i = dx[k] + x;
-18          int j = dy[k] + y;
-19          if(i < 0 || j < 0 || i >= n || j >= m) continue;
-20          int nc = c + (grid[i][j] ? -1 : 0);
-21          if(nc > best[i][j]) {
-22            best[i][j] = nc;
-23            pq.push({nc,i,j});
-24          }
-25        }
-26      }
-27      return 0;
-28    }
-29};
+// Last updated: 7/3/2026, 6:27:46 AM
+const int N=5000;
+int q[N], front, back;// implement deque
+int maxH[N];
+int d[5]={0, 1, 0, -1, 0};
+class Solution {
+public:
+    static inline int idx(int i, int j, int c){ return i*c+j; }
+    static bool outSide(int i, int j, int r, int c){
+        return i<0||i>=r||j<0||j>=c;
+    }
+    static bool findSafeWalk(vector<vector<int>>& grid, int health) {
+        const int r=grid.size(), c=grid[0].size();
+        memset(maxH, -1, r*c*sizeof(int));
+        front=back=N/2;// reset q
+        q[back++]=0; 
+        maxH[0]=health-grid[0][0];
+        while(front<back){
+            int ij=q[front++];// pop front
+            int curH=maxH[ij];
+            if (ij==r*c-1) return curH>0;
+            auto [i, j]=div(ij, c);
+            for(int a=0; a<4; a++){
+                const int s=i+d[a], t=j+d[a+1];
+                if (outSide(s, t, r, c)) continue;
+                const int st=idx(s,t, c);
+                int H2=curH-grid[s][t];
+                if(H2>maxH[st]){
+                    maxH[st]=H2;
+                    if (grid[s][t]==0) q[--front] = st;
+                    else q[back++]=st;
+                }
+            }
+        }
+        return 0;
+    }
+};
