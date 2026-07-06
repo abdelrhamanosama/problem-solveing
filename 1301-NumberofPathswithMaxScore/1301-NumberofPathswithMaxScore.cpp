@@ -1,43 +1,113 @@
-// Last updated: 7/6/2026, 6:06:10 AM
+// Last updated: 7/6/2026, 6:24:49 AM
 1class Solution {
 2public:
-3     vector<int> pathsWithMaxScore(vector<string>& board) {
-4    int dx[] = {-1,-1,0};
-5    int dy[] = {-1,0,-1};
-6    int n = board.size() , m = board[0].size() , mx = 0 , mod = 1e9 + 7;
-7    queue<array<int, 3>> q;
-8    vector<vector<int>> best(n,vector<int>(m,0)) ,ways(n, vector<int>(m,0));
-9    q.push({n-1,m-1,0});
-10    
-11    ways[n-1][m-1] = 1;
-12    while(!q.empty()){
-13      auto [x,y,c] = q.front(); 
-14      q.pop();
-15        if(board[x][y] == 'E') {
+3    static const int INF = 1e9;
+4    static const int MOD = 1e9 + 7;
+5
+6    int mem[105][105];
+7    int mem2[105][105][1805];
+8
+9    int dx[3] = {-1,-1,0};
+10    int dy[3] = {-1,0,-1};
+11
+12    int dp(int i,int j,vector<string>& board){
+13
+14        if(i < 0 || j < 0)
+15            return -INF;
 16
-17         continue;
-18        }
+17        if(board[i][j] == 'X')
+18            return -INF;
 19
-20      for(int k = 0 ; k < 3 ; k++){
-21        int i = dx[k] + x;
-22        int j = dy[k] + y;
-23        if(i < 0 || j < 0 || i >= n || j >= m) continue;
-24        if(board[i][j] == 'X') continue;
-25        char cost = board[i][j];
-26        if(board[i][j] == 'E') cost = '0';
-27        int nc = c + cost-'0';
-28        if(best[i][j] == nc) {
-29            ways[i][j] = (ways[x][y] + ways[i][j])%mod;
-30        }
-31        if(best[i][j] >= nc)  continue;
-32          ways[i][j] = (ways[x][y] );
-33          best[i][j] = nc;
-34          q.push({i,j,nc});
-35         
-36      }
-37      
-38    }
-39    vector<int> ans  = { best[0][0] , ways[0][0]};
-40    return ans;
-41  }
-42};
+20        if(i == 0 && j == 0)
+21            return 0;
+22
+23        int &ret = mem[i][j];
+24        if(ret != -1)
+25            return ret;
+26
+27        ret = -INF;
+28
+29        for(int k=0;k<3;k++){
+30
+31            int x = i + dx[k];
+32            int y = j + dy[k];
+33
+34            if(x < 0 || y < 0)
+35                continue;
+36
+37            if(board[x][y] == 'X')
+38                continue;
+39
+40            char c = board[x][y];
+41
+42            int add = 0;
+43            if(c != 'S' && c != 'E')
+44                add = c - '0';
+45
+46            ret = max(ret, dp(x,y,board) + add);
+47        }
+48
+49        return ret;
+50    }
+51
+52    int dp2(int i,int j,int sum,int target,vector<string>& board){
+53
+54        if(i < 0 || j < 0)
+55            return 0;
+56
+57        if(board[i][j] == 'X')
+58            return 0;
+59
+60        if(sum > target)
+61            return 0;
+62
+63        if(i == 0 && j == 0)
+64            return sum == target;
+65
+66        int &ret = mem2[i][j][sum];
+67        if(ret != -1)
+68            return ret;
+69
+70        ret = 0;
+71
+72        for(int k=0;k<3;k++){
+73
+74            int x = i + dx[k];
+75            int y = j + dy[k];
+76
+77            if(x < 0 || y < 0)
+78                continue;
+79
+80            if(board[x][y] == 'X')
+81                continue;
+82
+83            char c = board[x][y];
+84
+85            int add = 0;
+86            if(c != 'S' && c != 'E')
+87                add = c - '0';
+88
+89            ret += dp2(x,y,sum+add,target,board);
+90            ret %= MOD;
+91        }
+92
+93        return ret;
+94    }
+95
+96    vector<int> pathsWithMaxScore(vector<string>& board) {
+97
+98        memset(mem,-1,sizeof(mem));
+99        memset(mem2,-1,sizeof(mem2));
+100
+101        int n = board.size();
+102
+103        int mx = dp(n-1,n-1,board);
+104
+105        if(mx < 0)
+106            return {0,0};
+107
+108        int cnt = dp2(n-1,n-1,0,mx,board);
+109
+110        return {mx,cnt};
+111    }
+112};
