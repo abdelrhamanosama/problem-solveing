@@ -1,37 +1,23 @@
-// Last updated: 6/10/2026, 11:51:09 AM
-class Solution {
-    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
-        ListNode dummy = new ListNode();
-        ListNode list = dummy;
-
-        ListNode head1 = list1;
-        ListNode head2 = list2;
-
-        while (head1 != null && head2 != null) {
-            if (head1.val > head2.val) {
-                list.next = new ListNode(head2.val);
-                head2 = head2.next;
-            } else if (head1.val < head2.val) {
-                list.next = new ListNode(head1.val);
-                head1 = head1.next;
-            } else {
-                list.next = new ListNode(head1.val);
-                list = list.next;
-                list.next = new ListNode(head2.val);
-                head1 = head1.next;
-                head2 = head2.next;
-            }
-            list = list.next; // Move the list pointer to the next node
-        }
-
-        // Handle remaining elements in list1 or list2
-        if (head1 != null) {
-            list.next = head1;
-        }
-        if (head2 != null) {
-            list.next = head2;
-        }
-
-        return dummy.next;
-    }
-}
+// Last updated: 8/10/2026, 11:17:35 PM
+1class Solution {
+2    
+3    public char findKthBit(int n, int k) {
+4        return work(n).charAt(k-1);
+5    }
+6
+7    private StringBuilder work(int n)
+8    {
+9        if(n == 1) return new StringBuilder("0");
+10
+11        StringBuilder sb = work(n-1);
+12        StringBuilder sbb = new StringBuilder(sb);
+13        sbb.append("1");
+14        for(int i = sb.length()- 1 ; i >= 0; i--)
+15            {
+16                if(sb.charAt(i) == '1') sbb.append("0");
+17                else sbb.append("1");
+18            }
+19        // System.out.println(sbb + "\t" + sb + "\t" + n);
+20        return sbb;
+21    }
+22}
