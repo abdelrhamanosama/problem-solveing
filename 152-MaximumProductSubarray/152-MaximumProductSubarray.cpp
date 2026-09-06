@@ -1,16 +1,19 @@
-// Last updated: 9/7/2026, 2:32:17 AM
+// Last updated: 9/7/2026, 2:40:54 AM
 1class Solution {
 2public:
-3    int maxProduct(vector<int>& nums) {
-4        int mx = -1e9 , n = nums.size();
-5        for(int i = 0 ; i < n; i++)
-6            {
-7                int prod = 1;
-8                for(int j = i; j<n; j++){
-9                    prod*=nums[j];
-10                    mx = max(mx , prod);
-11                }
-12            }
-13        return mx;
-14    }
-15};
+3    vector<int> productExceptSelf(vector<int>& nums) {
+4        int n = nums.size();
+5        vector<int> pref,suff(n+1,1),ans;
+6        pref.push_back(1);
+7        for(int i = 0; i <n; i++){
+8            pref.push_back(pref.back()*nums[i]);
+9        }
+10        for(int i = n-1; i>=0; i--){
+11            suff[i]*=suff[i+1]*nums[i];
+12        }
+13        for(int i = 0; i < n; i++){
+14            ans.push_back(pref[i]*suff[i+1]);
+15        }
+16        return ans;
+17    }
+18};
