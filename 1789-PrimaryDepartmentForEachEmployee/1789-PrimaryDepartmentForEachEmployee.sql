@@ -1,0 +1,17 @@
+-- Last updated: 9/6/2026, 2:21:24 PM
+# Write your MySQL query statement below
+
+SELECT
+employee_id, department_id
+FROM Employee 
+WHERE primary_flag = 'Y'
+#GROUP BY employee_id
+#HAVING count(department_id) > 1
+
+UNION ALL
+
+SELECT
+employee_id, department_id
+FROM Employee 
+GROUP BY employee_id
+HAVING count(department_id) = 1
