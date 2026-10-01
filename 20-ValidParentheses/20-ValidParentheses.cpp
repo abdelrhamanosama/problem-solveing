@@ -1,43 +1,14 @@
-// Last updated: 9/25/2026, 8:01:28 AM
+// Last updated: 9/30/2026, 4:16:57 PM
 1class Solution {
-2    unordered_map<TreeNode*, long long> mp;
-3    TreeNode* mainRoot;
-4
-5    long long dfs1(TreeNode* root) {
-6        if (root == nullptr)
-7            return 0;
+2public:
+3    bool isValid(string s) {
+4       stack<char> st;
+5        for(int i = 0 ; i< s.size();i ++){
+6            if(st.empty()) st.push(s[i]);
+7            else if(st.top() == '(' && s[i] == ')' || st.top() == '[' && s[i] == ']' || st.top() == '{' && s[i] == '}' ) st.pop();
 8
-9        long long sum = root->val
-10                      + dfs1(root->left)
-11                      + dfs1(root->right);
-12
-13        mp[root] = sum;
-14
-15        return sum;
-16    }
-17
-18    void dfs2(TreeNode* root, long long& mx) {
-19        if (root == nullptr)
-20            return;
-21
-22        dfs2(root->left,mx);
-23        dfs2(root->right,mx);
-24
-25        long long sub = mp[root];
-26        long long other = mp[mainRoot] - sub;
-27
-28        mx = max(mx, sub * other);
-29    }
-30
-31public:
-32    int maxProduct(TreeNode* root) {
-33        mainRoot = root;
-34
-35        dfs1(root);
-36
-37        long long mx = 0;
-38        dfs2(root, mx);
-39
-40        return mx % 1'000'000'007;
-41    }
-42};
+9            else  st.push(s[i]);
+10        } 
+11        return st.size() == 0;
+12    }
+13};
