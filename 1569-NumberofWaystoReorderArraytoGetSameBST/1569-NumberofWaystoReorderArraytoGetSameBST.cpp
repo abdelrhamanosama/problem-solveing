@@ -1,4 +1,4 @@
-// Last updated: 10/18/2026, 6:14:46 PM
+// Last updated: 10/18/2026, 6:20:25 PM
 1class Solution {
 2public:
 3    int numOfWays(vector<int>& nums) {
@@ -14,7 +14,7 @@
 13        };
 14        function<long long(vector<int>&)> ways = [&](vector<int>& arr) -> long long {
 15            int m = arr.size();
-16            if (m <= 2) return 1;
+16            if (m <= 1) return 1;
 17            vector<int> left, right;
 18            for (int x : arr) {
 19                if (x < arr[0]) left.push_back(x);
